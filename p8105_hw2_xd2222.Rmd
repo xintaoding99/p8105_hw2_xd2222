@@ -5,3 +5,52 @@ date: "9/24/2019"
 output: github_document
 ---
 
+## Problem 1
+Read and clean dataset for Mr. Trash Wheel, precipitation 2017 and 2018
+
+```{r import and clean data}
+library(tidyverse)
+library(readxl)
+
+# Mr. Trash Wheel Data
+(trash_data = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "Mr. Trash Wheel", range = cell_cols("A:N")) %>% 
+  janitor::clean_names() %>% 
+  drop_na(dumpster) %>% 
+  mutate(sports_balls = as.integer(round(sports_balls, digits = 0)))
+)
+# 2017 Precipitation Data 
+(precip2017_data = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2017 Precipitation", range = "A2:B14") %>% 
+  janitor::clean_names() %>% 
+  drop_na() %>% 
+  mutate(year = "2017")
+)
+# 2018 Precipitaion Data
+(precip2018_data = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2018 Precipitation", range = "A2:B14") %>% 
+  janitor::clean_names() %>% 
+  drop_na(total) %>% 
+  mutate(year = "2018")
+)
+
+# Join 2017 and 2018 Precipitation Data
+precip_data = bind_rows(precip2017_data, precip2018_data) %>%  
+    mutate(month = as.character(month.name[month])) 
+precip_data = precip_data[c(3,1,2)]
+precip_data
+```
+(precip_data = 
+  left_join(precip2017_data, precip2018_data, by = "month") %>% 
+   
+)
+
+
+trash_data is a dataset on dumpster that are sent to a energy facility once it is full. The are `r nrow(trash_data)` obeservations in the trash dataset.Key variables pertains to detailed information on each dumpster collected, these include `r colnames(trash_data)[5:10]`. The median number of sports balls in a dumpster in 2017 was `r median(filter(trash_data, year == 2017)$sports_balls)`.
+
+There are `r nrow(precip_data)` observations in the precipitation dataset. Key variables include `r colnames(precip_data)`. The total precipitation in 2018 was `r sum(precip2018_data$total)`inches. The total precipitation in 2017 was `r sum(precip2017_data$total)`. 
+
+## Problem 2
+Read and clean precipiation data for 2017 and 2018
+```{r }
+
+
+``` 
+
