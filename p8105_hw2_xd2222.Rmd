@@ -8,12 +8,12 @@ output: github_document
 ## Problem 1
 Read and clean dataset for Mr. Trash Wheel, precipitation 2017 and 2018
 
-```{r import and clean data}
+```{r import and clean data, warning = FALSE}
 library(tidyverse)
 library(readxl)
 
 # Mr. Trash Wheel Data
-(trash_data = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "Mr. Trash Wheel", range = cell_cols("A:N")) %>% 
+(trash_data = read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = "Mr. Trash Wheel", range = cell_cols("A:N")) %>% 
   janitor::clean_names() %>% 
   drop_na(dumpster) %>% 
   mutate(sports_balls = as.integer(round(sports_balls, digits = 0)))
@@ -33,7 +33,7 @@ library(readxl)
 
 # Join 2017 and 2018 Precipitation Data
 precip_data = bind_rows(precip2017_data, precip2018_data) %>%  
-    mutate(month = as.character(month.name[month])) 
+    mutate(month = month.name[month]) 
 precip_data = precip_data[c(3,1,2)]
 precip_data
 ```
@@ -57,12 +57,11 @@ polsmonth_data = read_csv("./data/fivethirtyeight_datasets/pols-month.csv" ) %>%
            into = c("year", "month", "day"), 
            convert = TRUE) %>% 
   mutate(
-    month = as.character(month.name[month]), 
-    president = prez_dem + prez_gop, 
-    day = NULL, 
-    prez_dem = NULL, 
-    prez_gop = NULL)
-  #select(-prez_dem, -prez_gop)
+    month = month.abb[month], 
+    president = prez_dem - prez_gop, 
+    president = recode(president, "-1" = "gop", "1" = "dem")
+    ) %>% 
+  select(-prez_dem, -prez_gop, -day)
 
 polsmonth_data
 
@@ -72,17 +71,34 @@ snp_data = read_csv("./data/fivethirtyeight_datasets/snp.csv" ) %>%
   separate(date, 
            into = c("month", "day", "year"), 
            convert = TRUE) %>% 
-  arrange(year, month)
-snp_data = snp_data[ c(3,1,2,4)]
+  mutate(month = month.abb[month]) %>% 
+  arrange(year, month) %>% 
+  select(year, month, day, close)
 snp_data
 
 # import and clean the unemployment data 
-(unemp_data = read_csv("./data/fivethirtyeight_datasets/unemployment.csv") %>%
-  janitor::clean_names() %>% 
-  pivot_longer(jan:dec, 
-               names_to = "month",  
-               values_to = "umeployment"))
 
-  
+unemp_data = read_csv("./data/fivethirtyeight_datasets/unemployment.csv") %>%
+  pivot_longer(
+    Jan:Dec,
+    names_to = "month",  
+    values_to = "umeployment") %>% 
+janitor::clean_names()  
+unemp_data
+
+# join three datasets together
+snp_pols = full_join(polsmonth_data, snp_data, by= c("year", "month")) 
+snp_pols
+
+
+# try mutate to month abbreviations
+
+snps_pols_unemp = inner_join(snp_pols,unemp_data, by = c("year", "month")) 
+snps_pols_unemp
+```
+
+## Problem 3
+```{r}
+
 ```
 
