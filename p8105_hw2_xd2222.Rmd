@@ -49,8 +49,40 @@ There are `r nrow(precip_data)` observations in the precipitation dataset. Key v
 
 ## Problem 2
 Read and clean precipiation data for 2017 and 2018
-```{r }
+```{r read and clean data }
+# import and clean the pols-months data
+polsmonth_data = read_csv("./data/fivethirtyeight_datasets/pols-month.csv" ) %>% 
+  janitor::clean_names() %>% 
+  separate(mon, 
+           into = c("year", "month", "day"), 
+           convert = TRUE) %>% 
+  mutate(
+    month = as.character(month.name[month]), 
+    president = prez_dem + prez_gop, 
+    day = NULL, 
+    prez_dem = NULL, 
+    prez_gop = NULL)
+  #select(-prez_dem, -prez_gop)
 
+polsmonth_data
 
-``` 
+# import and clean the snp data
+snp_data = read_csv("./data/fivethirtyeight_datasets/snp.csv" ) %>%
+  janitor::clean_names() %>% 
+  separate(date, 
+           into = c("month", "day", "year"), 
+           convert = TRUE) %>% 
+  arrange(year, month)
+snp_data = snp_data[ c(3,1,2,4)]
+snp_data
+
+# import and clean the unemployment data 
+(unemp_data = read_csv("./data/fivethirtyeight_datasets/unemployment.csv") %>%
+  janitor::clean_names() %>% 
+  pivot_longer(jan:dec, 
+               names_to = "month",  
+               values_to = "umeployment"))
+
+  
+```
 
