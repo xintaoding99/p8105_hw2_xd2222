@@ -90,12 +90,14 @@ unemp_data
 snp_pols = full_join(polsmonth_data, snp_data, by= c("year", "month")) 
 snp_pols
 
-
-# try mutate to month abbreviations
-
 snps_pols_unemp = inner_join(snp_pols,unemp_data, by = c("year", "month")) 
 snps_pols_unemp
 ```
+The pols-month datasets contains `r nrow(polsmonth_data)` observations, and `r ncol(polsmonth_data)` variables. The variables are `r colnames(polsmonth_data)` that describe the number of national politicians who are democratic or repulican during `r range(polsmonth_data$year)`. The variable "president" was created to indicate whether the president is democratic or republican. 
+
+The snp dataset contains `r nrow(snp_data)` observations`, and `r ncol(snp_data)` variables that are related to S&P stock market index in the year `r range(snp_data$year)`. The variable "close" is the  closing value of S&P index on the associated date. 
+
+The unemployment data contains`r nrow(unemp_data)` observations, and `r ncol(unemp_data)` variables. The variables are `r colnames(unemp_data)` that documents percentage of unemployment in each of the 12 months of the associated year during the span of `r range(unemp_data$year)` 
 
 ## Problem 3
 ```{r}
