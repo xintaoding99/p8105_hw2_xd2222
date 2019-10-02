@@ -37,11 +37,6 @@ precip_data = bind_rows(precip2017_data, precip2018_data) %>%
 precip_data = precip_data[c(3,1,2)]
 precip_data
 ```
-(precip_data = 
-  left_join(precip2017_data, precip2018_data, by = "month") %>% 
-   
-)
-
 
 trash_data is a dataset on dumpster that are sent to a energy facility once it is full. The are `r nrow(trash_data)` obeservations in the trash dataset.Key variables pertains to detailed information on each dumpster collected, these include `r colnames(trash_data)[5:10]`. The median number of sports balls in a dumpster in 2017 was `r median(filter(trash_data, year == 2017)$sports_balls)`.
 
@@ -93,14 +88,45 @@ snp_pols
 snps_pols_unemp = inner_join(snp_pols,unemp_data, by = c("year", "month")) 
 snps_pols_unemp
 ```
-The pols-month datasets contains `r nrow(polsmonth_data)` observations, and `r ncol(polsmonth_data)` variables. The variables are `r colnames(polsmonth_data)` that describe the number of national politicians who are democratic or repulican during `r range(polsmonth_data$year)`. The variable "president" was created to indicate whether the president is democratic or republican. 
+The pols-month datasets contains `r nrow(polsmonth_data)` observations, and `r ncol(polsmonth_data)` variables. The variables are `r colnames(polsmonth_data)` that describe the number of national politicians who are democratic or repulican during the span of `r range(polsmonth_data$year)`. The variable "president" was created to indicate whether the president is democratic or republican. 
 
-The snp dataset contains `r nrow(snp_data)` observations`, and `r ncol(snp_data)` variables that are related to S&P stock market index in the year `r range(snp_data$year)`. The variable "close" is the  closing value of S&P index on the associated date. 
+The snp dataset contains `r nrow(snp_data)` observations`, and `r ncol(snp_data)` variables that are related to S&P stock market index during the span of `r range(snp_data$year)`. The variable "close" is the  closing value of S&P index on the associated date. 
 
 The unemployment data contains`r nrow(unemp_data)` observations, and `r ncol(unemp_data)` variables. The variables are `r colnames(unemp_data)` that documents percentage of unemployment in each of the 12 months of the associated year during the span of `r range(unemp_data$year)` 
 
 ## Problem 3
-```{r}
+```{r popular baby names}
+
+# import and clean baby name data
+name_data = read_csv("./data/Popular_Baby_Names.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate(
+    gender = str_to_lower(gender),
+    ethnicity = str_to_lower(ethnicity),
+    childs_first_name = str_to_title(childs_first_name)
+  ) %>% 
+  distinct()
+
+name_data 
+
+# create Olivia popularity table
+
+Olivia = filter(name_data, childs_first_name == "Olivia" ) %>% 
+  select(ethnicity, year_of_birth, rank) %>% 
+  arrange(ethnicity)
+Olivia
+
+# create male popular name table
+
+male_name = filter(name_data, gender == "male" ) %>% 
+  select(childs_first_name, ethnicity, year_of_birth, rank) %>% 
+  arrange(childs_first_name)
+male_name
+
+# plotting white non-hispanic male born in 2016' names vs. rank
+white_male_2016 = filter(name_data, gender == "male", ethnicity == "white non hispanic", year_of_birth == "2016") %>% 
+  ggplot(aes(x = rank , y = count)) + geom_point() + labs(title = "White Non-Hispanic Male Born in 2016 Number of Names vs, Rank", x = "rank in popularity", y = "number of children with a name")
+
+white_male_2016
 
 ```
-
