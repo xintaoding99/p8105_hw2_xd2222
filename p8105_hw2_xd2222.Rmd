@@ -13,23 +13,27 @@ library(tidyverse)
 library(readxl)
 
 # Mr. Trash Wheel Data
-(trash_data = read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = "Mr. Trash Wheel", range = cell_cols("A:N")) %>% 
+trash_data = read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = "Mr. Trash Wheel", range = cell_cols("A:N")) %>% 
   janitor::clean_names() %>% 
   drop_na(dumpster) %>% 
   mutate(sports_balls = as.integer(round(sports_balls, digits = 0)))
-)
+trash_data
+
 # 2017 Precipitation Data 
-(precip2017_data = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2017 Precipitation", range = "A2:B14") %>% 
+precip2017_data = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2017 Precipitation", range = "A2:B14") %>% 
   janitor::clean_names() %>% 
   drop_na() %>% 
   mutate(year = "2017")
-)
+
+precip2017_data
+
 # 2018 Precipitaion Data
-(precip2018_data = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2018 Precipitation", range = "A2:B14") %>% 
+precip2018_data = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2018 Precipitation", range = "A2:B14") %>% 
   janitor::clean_names() %>% 
   drop_na(total) %>% 
   mutate(year = "2018")
-)
+
+precip2018_data
 
 # Join 2017 and 2018 Precipitation Data
 precip_data = bind_rows(precip2017_data, precip2018_data) %>%  
@@ -95,6 +99,8 @@ The snp dataset contains `r nrow(snp_data)` observations`, and `r ncol(snp_data)
 The unemployment data contains`r nrow(unemp_data)` observations, and `r ncol(unemp_data)` variables. The variables are `r colnames(unemp_data)` that documents percentage of unemployment in each of the 12 months of the associated year during the span of `r range(unemp_data$year)` 
 
 ## Problem 3
+
+Import, clean, and plot popular baby name data
 ```{r popular baby names}
 
 # import and clean baby name data
